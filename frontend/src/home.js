@@ -8,15 +8,13 @@ import Container from "@material-ui/core/Container";
 import React from "react";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
-import { Paper, CardActionArea, CardMedia, Grid, TableContainer, Table, TableBody, TableHead, TableRow, TableCell, Button, CircularProgress } from "@material-ui/core";
+import { Paper, CardActionArea, CardMedia, Grid, CircularProgress, Button } from "@material-ui/core";
 import cblogo from "./PRECISION.png";
 import image from "./bg6.png";
 import { DropzoneArea } from 'material-ui-dropzone';
 import { common } from '@material-ui/core/colors';
 import Clear from '@material-ui/icons/Clear';
-
-
-
+import axios from "axios";
 
 const ColorButton = withStyles((theme) => ({
   root: {
@@ -27,7 +25,6 @@ const ColorButton = withStyles((theme) => ({
     },
   },
 }))(Button);
-const axios = require("axios").default;
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -68,10 +65,11 @@ const useStyles = makeStyles((theme) => ({
   imageCard: {
     margin: "auto",
     maxWidth: 400,
-    height: 500,
+    height: 'auto', // Adjust to auto to fit the content
     backgroundColor: 'transparent',
     boxShadow: '0px 9px 70px 0px rgb(0 0 0 / 30%) !important',
     borderRadius: '15px',
+    overflow: 'hidden', // Ensure no overflow
   },
   imageCardEmpty: {
     height: 'auto',
@@ -79,7 +77,7 @@ const useStyles = makeStyles((theme) => ({
   noImage: {
     margin: "auto",
     width: 400,
-    height: "400 !important",
+    height: "auto",
   },
   input: {
     display: 'none',
@@ -128,11 +126,11 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   detail: {
-    backgroundColor: 'white',
-    display: 'flex',
-    justifyContent: 'center',
-    flexDirection: 'column',
-    alignItems: 'center',
+    backgroundColor: '#ffffffcc', // Semi-transparent white background
+    borderRadius: '10px',
+    padding: theme.spacing(2),
+    textAlign: 'center',
+    minHeight: 100, // Set a minimum height to avoid layout shifts
   },
   appbar: {
     background: '#334f3e',
@@ -141,8 +139,14 @@ const useStyles = makeStyles((theme) => ({
   },
   loader: {
     color: '#334f3e !important',
+  },
+  resultSection: {
+    padding: theme.spacing(2),
+    textAlign: 'center',
+    width: '50%',
   }
 }));
+
 export const ImageUpload = () => {
   const classes = useStyles();
   const [selectedFile, setSelectedFile] = useState();
@@ -235,7 +239,7 @@ export const ImageUpload = () => {
                   className={classes.media}
                   image={preview}
                   component="image"
-                  title="Contemplative Reptile"
+                  title="Leaf Image"
                 />
               </CardActionArea>
               }
@@ -246,45 +250,34 @@ export const ImageUpload = () => {
                   onChange={onSelectFile}
                 />
               </CardContent>}
-              {data && <CardContent className={classes.detail}>
-                <TableContainer component={Paper} className={classes.tableContainer}>
-                  <Table className={classes.table} size="small" aria-label="simple table">
-                    <TableHead className={classes.tableHead}>
-                      <TableRow className={classes.tableRow}>
-                        <TableCell className={classes.tableCell1}>Disease:</TableCell>
-                        <TableCell align="right" className={classes.tableCell1}>Confidence:</TableCell>
-                       
-                      </TableRow>
-                    </TableHead>
-                    <TableBody className={classes.tableBody}>
-                      <TableRow className={classes.tableRow}>
-                        <TableCell component="th" scope="row" className={classes.tableCell}>
-                          {data.class}
-                        </TableCell>
-                        <TableCell align="right" className={classes.tableCell}>{confidence}%</TableCell>
-                        
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </CardContent>}
-              {isLoading && <CardContent className={classes.detail}>
+              {/* {isLoading && <CardContent className={classes.detail}>
                 <CircularProgress color="secondary" className={classes.loader} />
                 <Typography className={classes.title} variant="h6" noWrap>
                   Processing
                 </Typography>
-              </CardContent>}
+              </CardContent>} */}
             </Card>
           </Grid>
-          {data &&
-            <Grid item className={classes.buttonGrid} >
-
+          {data && (
+            <Grid item xs={12} className={classes.resultSection}>
+              <Card className={classes.detail}>
+                <CardContent>
+                  <Typography variant="h6">Disease: {data.class}</Typography>
+                  <Typography variant="h6">Confidence: {confidence}%</Typography>
+                  <Typography variant="h6">Solution: {data.solution}</Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          )}
+          {data && (
+            <Grid item className={classes.buttonGrid}>
               <ColorButton variant="contained" className={classes.clearButton} color="primary" component="span" size="large" onClick={clearData} startIcon={<Clear fontSize="large" />}>
                 Clear
               </ColorButton>
-            </Grid>}
-        </Grid >
-      </Container >
-    </React.Fragment >
+            </Grid>
+          )}
+        </Grid>
+      </Container>
+    </React.Fragment>
   );
 };
